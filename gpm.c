@@ -1,4 +1,5 @@
-// Rust program for GPM
+// C implementation of Christopher Strachey's GPM
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -298,10 +299,10 @@ gpm_exit(mem *gpm) {
         exit(0);
     }
 
-    // Machine code macros
+// Machine code macros
 
-    // This version of DEF is shorter than that given in 
-    // Section 7 as it leaves `end_fn` to copy back the definition
+// This version of DEF is shorter than that given in
+// Section 7 as it leaves `end_fn` to copy back the definition
 void
 gpm_def(mem *gpm) {
         if (gpm->h != 0) {
@@ -394,11 +395,11 @@ gpm_bar(mem *gpm) {
         gpm_end_fn(gpm);
     }
 
-    // Monitor for errors
+// Monitor for errors
 
-    // This routine outputs the item on the stack starting at
-    // ST[x]. If the item is not complete, printing stops at
-    // ST[S-1] and is followed by '...(Incomplete)'.
+// This routine outputs the item on the stack starting at
+// ST[x]. If the item is not complete, printing stops at
+// ST[S-1] and is followed by '...(Incomplete)'.
 void
 gpm_item(mem *gpm, int x) {
         printf(" ");
@@ -427,10 +428,9 @@ gpm_item(mem *gpm, int x) {
         gpm->h = h;
     }
 
-    // Monitor entries and effects
+// Monitor entries and effects
 
-    // Unmatched ; in definition string. Treated
-    // as <;>
+// Unmatched } in definition string. Treated as [}]
 void
 gpm_monitor1(mem *gpm) {
         printf("\nMONITOR: Unmatched semicolon in definition of");
@@ -439,8 +439,7 @@ gpm_monitor1(mem *gpm) {
         gpm_copy(gpm);
     }
 
-    // Unquoted ~ in argument list in input
-    // stream. Treated as <~>
+// Unquoted $ in argument list in input stream. Treated as [$]
 void
 gpm_monitor2(mem *gpm) {
         printf("\nMONITOR: Unquoted tilde in argument list of");
@@ -449,8 +448,7 @@ gpm_monitor2(mem *gpm) {
         gpm_copy(gpm);
     }
 
-    // Impossible charcter (negative) as argument
-    // number. Terminate.
+// Impossible character (negative) as argument number. Terminate.
 void
 gpm_monitor3(mem *gpm) {
         printf("\nMONITOR: Impossible argument number in definition of");
@@ -458,8 +456,7 @@ gpm_monitor3(mem *gpm) {
         gpm_monitor11(gpm);
     }
 
-    // Not enough arguments supplied in call.
-    // Terminate.
+// Not enough arguments supplied in call. Terminate.
 void
 gpm_monitor4(mem *gpm) {
         printf("\nMONITOR: No argument ");
@@ -470,11 +467,11 @@ gpm_monitor4(mem *gpm) {
         gpm_monitor11(gpm);
     }
 
-    // Terminator in impossible place; if C == 0,
-    // this is the input stream. Probably
-    // machine error: Terminate. If C != 0, this
-    // is an argument list. Probably due to a
-    // missing semicolon: Final semicolon inserted.
+// Terminator in impossible place; if C == 0,
+// this is the input stream. Probably
+// machine error: Terminate. If C != 0, this
+// is an argument list. Probably due to a
+// missing semicolon: Final semicolon inserted.
 void
 gpm_monitor5(mem *gpm) {
         printf("\nMONITOR: Terminator in");
@@ -492,7 +489,7 @@ gpm_monitor5(mem *gpm) {
         gpm_apply(gpm);
     }
 
-    // Undefined macro name: Terminate.
+// Undefined macro name: Terminate.
 void
 gpm_monitor7(mem *gpm) {
         printf("\nMONITOR: Undefined name");
@@ -500,15 +497,15 @@ gpm_monitor7(mem *gpm) {
         gpm_monitor11(gpm);
     }
 
-    // Wrong exit (not C == H == 0). Machine
-    // error: Terminate.
+// Wrong exit (not C == H == 0). Machine
+// error: Terminate.
 void
 gpm_monitor8(mem *gpm) {
         printf("\nMONITOR: Unmatched >. Probably machine error.");
         gpm_monitor11(gpm);
     }
 
-    // Update string too long: Terminate.
+// Update string too long: Terminate.
 void
 gpm_monitor9(mem *gpm) {
         printf("\nMONITOR: Update argument too long for");
@@ -516,15 +513,14 @@ gpm_monitor9(mem *gpm) {
         gpm_monitor11(gpm);
     }
 
-    // Non-digit in argument for BIN. Terminate.
+// Non-digit in argument for BIN. Terminate.
 void
 gpm_monitor10(mem *gpm) {
         printf("\nMONITOR: Non-digit in number");
         gpm_monitor11(gpm);
     }
 
-    // General monitor after irremediable
-    // errors.
+// General monitor after irremediable errors.
 void
 gpm_monitor11(mem *gpm) {
         gpm->w = 20;
@@ -566,45 +562,9 @@ gpm_monitor11(mem *gpm) {
     }
 }
 
-// These are implementation-dependent functions. They
-// convert the `usize` equivalent of a decimal digit read in
-// with `read_symbol` to the corresponding number (also of
-// type `usize`) and vice versa
-void
-gpm_number(int x) -> usize {
-    (x as isize - b'0' as isize) as usize
-}
 
-void
-gpm_char_(int x) -> usize {
-    x + b'0' as usize
-}
-
-
-void
-gpm_read_symbol(c: &mut usize) {
-    let byte = switch (io::stdin().bytes().next()){
-        Some(b) => b,
-        None => {
-            eprintln!("Unexpected EOF");
-            process::exit(1);
-        }
-
-            gpm->s = 39;
-            gpm->e = 33;
-            gpm->q = 1;
-            gpm->c = 0;
-            gpm->h = 0;
-            gpm->p = 0;
-            gpm->f = 0;
-            gpm->a = 0;
-            gpm->w = 0;
-	gpm->marker = -1<<20;
-	return gpm;
-    }
-
-    // n is stack size allowed. This should be as large as
-    // possible -- say 10,000.
+// n is stack size allowed. This should be as large as
+// possible -- say 10,000.
 mem *
 gpm_new(int n) {
 	mem *gpm = malloc(n);
@@ -633,16 +593,17 @@ gpm_new(int n) {
 	for (int i = 0; i < sizeof(mst) / sizeof(mst[0]); i++) {
                 gpm->st[i] = mst[i];
 	}
-            gpm->s = 39;
-            gpm->e = 33;
-            gpm->q = 1;
-            gpm->c = 0;
-            gpm->h = 0;
-            gpm->p = 0;
-            gpm->f = 0;
-            gpm->a = 0;
-            gpm->w = 0;
-            marker: -1<<20;
+	gpm->s = 39;
+	gpm->e = 33;
+	gpm->q = 1;
+	gpm->c = 0;
+	gpm->h = 0;
+	gpm->p = 0;
+	gpm->f = 0;
+	gpm->a = 0;
+	gpm->w = 0;
+	gpm->marker = -1<<20;
+	return gpm;
     }
 
 void
