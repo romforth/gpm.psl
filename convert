@@ -1,0 +1,24 @@
+#!/usr/bin/perl -w
+while (<>) {
+	/use .*/ and next;
+	/impl .*/ and next;
+	s/self\./gpm\-\>/g;
+	s/if (.*) \{/if \($1\) {/;
+	s/while (.*) \{/while \($1\) {/;
+	s/for (.) in ([^\.])+\.\.([^{]+)\{/for (int $1 = $2; $1 < $3; $1\+\+) {/;
+	s/\s*fn /void\ngpm_/g;
+	s/(\s*)return (.*)/$1$2\n$1return;/g;
+	s/match (.*) /switch ($1)/g;
+	s/b\'(.)\' =>\s+/\tbreak;\n\tcase \'$1':\n\t\t/g;
+	s/let mut/int/g;
+	s/print\!/printf/g;
+	s/(\S*): usize,/int $1;/g;
+	s/(\S*): (\d+),/gpm->$1 = $2;/g;
+	s/(\w*): usize/int $1/g;
+	s/ \+\= 1/++/g;
+	s/loop \{/for (;;) \{/g;
+	s/\&mut gpm\-\>/mem *gpm)/g;
+	s/gpm\-\>(.*)\(\)/gpm_$1(gpm)/g;
+	s/(\d+)i8 as u8/$1/g;
+	print;
+}
