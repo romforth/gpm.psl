@@ -1,3 +1,3 @@
-all : gpm.o
+all : gpm
 clean:
-	rm gpm.o
+	rm gpm
