@@ -45,10 +45,7 @@ XUX
 
 
 
-{def Sum [{S $1 $2 0 {def S 
-     [{$3 {def $3 [{S ]{Successor $1 $2}
-                                  [ ]{Suc $3}[}]}
-          {def ]$3[ $1[ ]$2}}]}}]}
+
 
 c
 c
@@ -65,5 +62,5 @@ different
 3 0
 3 0
 
-{Sum 3 4 2}
+3 6
 3 6
