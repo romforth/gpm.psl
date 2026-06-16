@@ -1,6 +1,11 @@
 // Rust program for GPM
-struct GPM {
-    st: Box<[usize]>,
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct mem mem;
+typedef void (*fn)(mem *);
+
+struct mem {
     int s;
     int e;
     int q;
@@ -11,8 +16,9 @@ struct GPM {
     int a;
     int w;
     int marker;
-    machine_macro: Vec<fn(&mut GPM)>,
-}
+	fn prims[6];
+        int st[];
+};
 
     // n is stack size allowed. This should be as large as
     // possible -- say 10,000.
@@ -62,7 +68,7 @@ gpm_new(int n) -> Self {
 void
 gpm_load(mem *gpm) {
         if (gpm->h == 0) {
-            write_symbol(&gpm->a);
+            write_symbol(gpm->a);
         } else {
             gpm->st[gpm->s] = gpm->a;
             gpm->s++;
@@ -70,28 +76,46 @@ gpm_load(mem *gpm) {
     }
 
 void
+read_symbol(int *c) {
+        int ch = getchar();
+        *c= (ch == EOF) ? '>' : ch;
+}
+
+void
 gpm_next_ch(mem *gpm) {
         if (gpm->c == 0) {
-            read_symbol(mem *gpm)a);
+            read_symbol(&gpm->a);
         } else {
             gpm->a = gpm->st[gpm->c];
             gpm->c++;
         }
     }
 
+void gpm_monitor1(mem *);
+void gpm_monitor2(mem *);
+void gpm_monitor3(mem *);
+void gpm_monitor4(mem *);
+void gpm_monitor5(mem *);
+void gpm_monitor6(mem *);
+void gpm_monitor7(mem *);
+void gpm_monitor8(mem *);
+void gpm_monitor9(mem *);
+void gpm_monitor10(mem *);
+void gpm_monitor11(mem *);
+
 void
-gpm_find(mem *gpm) int x) {
+gpm_find(mem *gpm, int x) {
         gpm->w = x;
         gpm->a = gpm->e;
         int flag = false;
-        'next: while ((gpm->a as isize) > 0) {
+next:	while (gpm->a > 0) {
             if (flag) {
                 gpm->a = gpm->st[gpm->a];
             }
             flag = true;
             for (int r = 0; r < gpm->st[gpm->w] ; r++) {
                 if (gpm->st[gpm->w + r] != gpm->st[gpm->a + r + 1]) {
-                    continue 'next;
+                    goto next;
                 }
             }
             gpm->w = gpm->a + 1 + gpm->st[gpm->w];
@@ -108,43 +132,41 @@ gpm_find(mem *gpm) int x) {
     // machine_macro, whose entries are the labels of the
     // corresponding programs.
 void
-gpm_jump_if_marked(mem *gpm) int x) {
-        if (-6 < (x as i8) && (x as i8) < 0) {
-            gpm->machine_macro[-(x as i8) as usize - 1](gpm->;
+gpm_jump_if_marked(mem *gpm, char x) {
+        if (-6 < x && x < 0) {
+            gpm->prims[-x - 1](gpm);
         }
     }
 
     // Main cycle
 void
 gpm_start(mem *gpm) {
-        gpm_next_ch(gpm);
-        //eprintln!("{:?}", gpm->a as u8 as char);
-        switch (gpm->a as u8){
-            	break;
-	case '<':
-		{
-                gpm->q++;
-                gpm_q2(gpm);
-            }
-            	break;
-	case '$':
-		gpm_fn_(gpm),
-            	break;
-	case ',':
-		gpm_next_item(gpm),
-            	break;
-	case ';':
-		gpm_apply(gpm),
-            	break;
-	case '~':
-		gpm_load_arg(gpm),
-            _ if gpm_a == gpm->marker => gpm->end_fn(gpm),
-            	break;
-	case '>':
-		gpm_exit(gpm),
-            _ => gpm_copy(gpm),
-        }
-    }
+	gpm_next_ch(gpm);
+
+	switch (gpm->a){
+		case '<':
+			gpm->q++;
+			gpm_q2(gpm);
+			break;
+		case '$':
+			gpm_macro(gpm);
+			break;
+		case ',':
+			gpm_next_item(gpm);
+			break;
+		case ';':
+			gpm_apply(gpm);
+			break;
+		case '~':
+			gpm_load_arg(gpm);
+			break;
+		case '>':
+			gpm_exit(gpm);
+			break;
+		default :
+			(gpm->a == gpm->marker) ? gpm_end_fn(gpm) : gpm_copy(gpm);
+		}
+	}
 
 void
 gpm_copy(mem *gpm) {
@@ -159,11 +181,11 @@ gpm_copy(mem *gpm) {
 void
 gpm_q2(mem *gpm) {
         gpm_next_ch(gpm);
-        if (gpm->a as u8 == b'<') {
+        if (gpm->a == '<') {
             gpm->q++;
             gpm_copy(gpm);
             return;
-        } else if (gpm->a as u8 != b'>') {
+        } else if (gpm->a != '>') {
             gpm_copy(gpm);
             return;
         }
@@ -178,7 +200,7 @@ gpm_q2(mem *gpm) {
     // Warning character actions
 
 void
-gpm_fn_(mem *gpm) {
+gpm_macro(mem *gpm) {
         gpm->st[gpm->s] = gpm->h;
         gpm->st[gpm->s + 1] = gpm->f;
         gpm->st[gpm->s + 2] = 0;
@@ -211,8 +233,8 @@ gpm_apply(mem *gpm) {
             gpm_copy(gpm);
             return;
         }
-        let stf = gpm->st[gpm->f];
-        let stfm1 = gpm->st[gpm->f - 1];
+        int stf = gpm->st[gpm->f];
+        int stfm1 = gpm->st[gpm->f - 1];
         gpm->st[gpm->f + 1] = gpm->c;
         gpm->st[gpm->f] = gpm->p;
         gpm->st[gpm->f - 1] = gpm->s - gpm->f + 2;
@@ -226,10 +248,12 @@ gpm_apply(mem *gpm) {
             gpm->st[gpm->h] += gpm->st[gpm->p - 1];
         }
         gpm_find(gpm, gpm->p + 2);
-        gpm->jump_if_marked(gpm->st[gpm->w]);
+        gpm_jump_if_marked(gpm, gpm->st[gpm->w]);
         gpm->c = gpm->w + 1;
         gpm_start(gpm);
     }
+
+#define number(x) ((x)-'0')
 
 void
 gpm_load_arg(mem *gpm) {
@@ -244,7 +268,7 @@ gpm_load_arg(mem *gpm) {
         }
         gpm_next_ch(gpm);
         gpm->w = gpm->p + 2;
-        if ((number(gpm->a) as isize) < 0) {
+        if (number(gpm->a) < 0) {
             gpm_monitor3(gpm);
             return;
         }
@@ -273,7 +297,7 @@ gpm_end_fn(mem *gpm) {
         gpm->st[gpm->s] = gpm->e;
 
         while (gpm->st[gpm->a] >= gpm->p - 1 + gpm->st[gpm->p - 1]) {
-            let sta = gpm->st[gpm->a];
+            int sta = gpm->st[gpm->a];
             gpm->st[gpm->a] -= gpm->st[gpm->p - 1];
             gpm->a = sta;
         }
@@ -309,13 +333,14 @@ gpm_end_fn(mem *gpm) {
         gpm_start(gpm);
     }
 
+
 void
 gpm_exit(mem *gpm) {
         if (gpm->c != 0 || gpm->h != 0) {
             gpm_monitor8(gpm);
             return;
         }
-        process::exit(0);
+        exit(0);
     }
 
     // Machine code macros
@@ -352,7 +377,7 @@ gpm_update(mem *gpm) {
             gpm_monitor9(gpm);
             return;
         }
-        for (int r = 1; r < =gpm->st[gpm->a] ; r++) {
+        for (int r = 1; r <= gpm->st[gpm->a] ; r++) {
             gpm->st[gpm->w + r] = gpm->st[gpm->a + r];
         }
         gpm_end_fn(gpm);
@@ -361,34 +386,27 @@ gpm_update(mem *gpm) {
 void
 gpm_bin(mem *gpm) {
         gpm->w = 0;
-        gpm->a = if gpm->st[gpm->p + 7] == b'+' as usize
-            || gpm->st[gpm->p + 7] == b'-' as usize {
-            gpm->p + 8
-        } else {
-            gpm->p + 7
-        };
+        gpm->a =  ((gpm->st[gpm->p + 7] == '+') || (gpm->st[gpm->p + 7] == '-')) ? gpm->p + 8 :  gpm->p + 7;
         while (gpm->st[gpm->a] != gpm->marker) {
-            let x = number(gpm->st[gpm->a]);
-            if (!(0..=9).contains(&x)) {
+            int x = number(gpm->st[gpm->a]);
+            if (x > 9) {
                 gpm_monitor10(gpm);
             }
             gpm->w = gpm->w * 10 + x;
             gpm->a++;
         }
-        gpm->st[gpm->s] = if (gpm->st[gpm->p + 7] == b'-' as usize) {
-            -(gpm->w as isize) as usize
-        } else {
-            gpm->w
-        };
+        gpm->st[gpm->s] = (gpm->st[gpm->p + 7] == '-') ? -(gpm->w) : gpm->w;
         gpm->s++;
     }
+
+#define char_(x) ((x)+'0')
 
 void
 gpm_dec(mem *gpm) {
         gpm->w = gpm->st[gpm->p + 7];
-        if ((gpm->w as isize) < 0) {
-            gpm->w = -(gpm->w as isize) as usize;
-            gpm->a = b'-' as usize;
+        if (gpm->w < 0) {
+            gpm->w = -gpm->w;
+            gpm->a = '-';
             gpm_load(gpm);
         }
         int w1 = 1;
@@ -410,20 +428,12 @@ void
 gpm_bar(mem *gpm) {
         gpm->w = gpm->st[gpm->p + 9];
         gpm->a = gpm->st[gpm->p + 11];
-        gpm->a = switch (gpm->st[gpm->p + 7] as u8){
-            	break;
-	case '+':
-		gpm->w + gpm->a,
-            	break;
-	case '-':
-		gpm->w - gpm->a,
-            	break;
-	case '*':
-		gpm->w * gpm->a,
-            	break;
-	case '/':
-		gpm->w / gpm->a,
-            _ => gpm->w % gpm->a,
+        switch (gpm->st[gpm->p + 7]){
+		case '+': gpm->a = gpm->w + gpm->a; break;
+		case '-': gpm->a = gpm->w - gpm->a; break;
+		case '*': gpm->a = gpm->w * gpm->a; break;
+		case '/': gpm->a = gpm->w / gpm->a; break;
+		default : gpm->a = gpm->w % gpm->a; break;
         };
         gpm_load(gpm);
         gpm_end_fn(gpm);
@@ -435,9 +445,10 @@ gpm_bar(mem *gpm) {
     // ST[x]. If the item is not complete, printing stops at
     // ST[S-1] and is followed by '...(Incomplete)'.
 void
-gpm_item(mem *gpm) int x) {
+gpm_item(mem *gpm, int x) {
         printf(" ");
-        let (a, h) = (gpm->a, gpm->h);
+        int a = gpm->a;
+	int h = gpm->h;
         gpm->h = 0;
         int k = 1;
         for (;;) {
@@ -590,7 +601,7 @@ gpm_monitor11(mem *gpm) {
             gpm->w = 1;
         }
         printf("\nEnd of monitor printing");
-        gpm->a = b'Q' as usize;
+        gpm->a = 'Q';
         gpm_load(gpm);
         if (gpm->p > gpm->f) {
             gpm_end_fn(gpm);
@@ -623,17 +634,22 @@ gpm_read_symbol(c: &mut usize) {
             eprintln!("Unexpected EOF");
             process::exit(1);
         }
-    }.unwrap();
-    *c = byte as usize;
-}
 
-void
-gpm_write_symbol(c: &usize) {
-    assert_eq!(1, io::stdout().write(&[*c as u8]).unwrap());
-}
+            gpm->s = 39;
+            gpm->e = 33;
+            gpm->q = 1;
+            gpm->c = 0;
+            gpm->h = 0;
+            gpm->p = 0;
+            gpm->f = 0;
+            gpm->a = 0;
+            gpm->w = 0;
+	gpm->marker = -1<<20;
+	return gpm;
+    }
 
 void
 gpm_main() {
-    int gpm = GPM::new(10_000);
-    gpm.start();
+    mem *gpm = gpm_new(10000);
+    gpm_start(gpm);
 }
