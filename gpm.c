@@ -62,7 +62,7 @@ gpm_new(int n) -> Self {
 void
 gpm_load(mem *gpm) {
         if (gpm->h == 0) {
-            write_symbol(&gpm->a)
+            write_symbol(&gpm->a);
         } else {
             gpm->st[gpm->s] = gpm->a;
             gpm->s++;
@@ -97,7 +97,7 @@ gpm_find(mem *gpm) int x) {
             gpm->w = gpm->a + 1 + gpm->st[gpm->w];
             return;
         }
-        gpm_monitor7(gpm)
+        gpm_monitor7(gpm);
     }
 
     // This routine depends on the method for marking machine
@@ -124,7 +124,7 @@ gpm_start(mem *gpm) {
 	case '<':
 		{
                 gpm->q++;
-                gpm_q2(gpm)
+                gpm_q2(gpm);
             }
             	break;
 	case '$':
@@ -150,9 +150,9 @@ void
 gpm_copy(mem *gpm) {
         gpm_load(gpm);
         if (gpm->q == 1) {
-            gpm_start(gpm)
+            gpm_start(gpm);
         } else {
-            gpm_q2(gpm)
+            gpm_q2(gpm);
         }
     }
 
@@ -169,9 +169,9 @@ gpm_q2(mem *gpm) {
         }
         gpm->q -= 1;
         if (gpm->q == 1) {
-            gpm_start(gpm)
+            gpm_start(gpm);
         } else {
-            gpm_copy(gpm)
+            gpm_copy(gpm);
         }
     }
 
@@ -186,7 +186,7 @@ gpm_fn_(mem *gpm) {
         gpm->h = gpm->s + 3;
         gpm->f = gpm->s + 1;
         gpm->s += 4;
-        gpm_start(gpm)
+        gpm_start(gpm);
     }
 
 void
@@ -199,7 +199,7 @@ gpm_next_item(mem *gpm) {
         gpm->st[gpm->h] = gpm->s - gpm->h - gpm->st[gpm->h];
         gpm->h = gpm->s;
         gpm->s++;
-        gpm_start(gpm)
+        gpm_start(gpm);
     }
 
 void
@@ -228,7 +228,7 @@ gpm_apply(mem *gpm) {
         gpm->find(gpm->p + 2);
         gpm->jump_if_marked(gpm->st[gpm->w]);
         gpm->c = gpm->w + 1;
-        gpm_start(gpm)
+        gpm_start(gpm);
     }
 
 void
@@ -259,7 +259,7 @@ gpm_load_arg(mem *gpm) {
             gpm->a = gpm->st[gpm->w + r];
             gpm_load(gpm);
         }
-        gpm_start(gpm)
+        gpm_start(gpm);
     }
 
 void
@@ -306,7 +306,7 @@ gpm_end_fn(mem *gpm) {
             gpm->w++;
             gpm->a++;
         }
-        gpm_start(gpm)
+        gpm_start(gpm);
     }
 
 void
@@ -330,7 +330,7 @@ gpm_def(mem *gpm) {
         gpm->st[gpm->p - 1] = 6;
         gpm->st[gpm->p + 5] = gpm->e;
         gpm->e = gpm->p + 5;
-        gpm_end_fn(gpm)
+        gpm_end_fn(gpm);
     }
 
 void
@@ -470,7 +470,7 @@ gpm_monitor1(mem *gpm) {
         printf("\nMONITOR: Unmatched semicolon in definition of");
         gpm->item(gpm->p + 2);
         printf("\nIf this had been quoted the result would be \n");
-        gpm_copy(gpm)
+        gpm_copy(gpm);
     }
 
     // Unquoted ~ in argument list in input
@@ -480,7 +480,7 @@ gpm_monitor2(mem *gpm) {
         printf("\nMONITOR: Unquoted tilde in argument list of");
         gpm->item(gpm->f + 2);
         printf("\nIf this had been quoted the result would be \n");
-        gpm_copy(gpm)
+        gpm_copy(gpm);
     }
 
     // Impossible charcter (negative) as argument
@@ -489,7 +489,7 @@ void
 gpm_monitor3(mem *gpm) {
         printf("\nMONITOR: Impossible argument number in definition of");
         gpm->item(gpm->p + 2);
-        gpm_monitor11(gpm)
+        gpm_monitor11(gpm);
     }
 
     // Not enough arguments supplied in call.
@@ -501,7 +501,7 @@ gpm_monitor4(mem *gpm) {
         gpm_load(gpm);
         printf(" in call for");
         gpm->item(gpm->p + 2);
-        gpm_monitor11(gpm)
+        gpm_monitor11(gpm);
     }
 
     // Terminator in impossible place; if C == 0,
@@ -523,7 +523,7 @@ gpm_monitor5(mem *gpm) {
         gpm->item(gpm->p + 2);
         printf("\nIf a final semicolon is inserted the result is \n");
         gpm->c -= 1;
-        gpm_apply(gpm)
+        gpm_apply(gpm);
     }
 
     // Undefined macro name: Terminate.
@@ -531,7 +531,7 @@ void
 gpm_monitor7(mem *gpm) {
         printf("\nMONITOR: Undefined name");
         gpm->item(gpm->w);
-        gpm_monitor11(gpm)
+        gpm_monitor11(gpm);
     }
 
     // Wrong exit (not C == H == 0). Machine
@@ -539,7 +539,7 @@ gpm_monitor7(mem *gpm) {
 void
 gpm_monitor8(mem *gpm) {
         printf("\nMONITOR: Unmatched >. Probably machine error.");
-        gpm_monitor11(gpm)
+        gpm_monitor11(gpm);
     }
 
     // Update string too long: Terminate.
@@ -547,14 +547,14 @@ void
 gpm_monitor9(mem *gpm) {
         printf("\nMONITOR: Update argument too long for");
         gpm->item(gpm->p + 9);
-        gpm_monitor11(gpm)
+        gpm_monitor11(gpm);
     }
 
     // Non-digit in argument for BIN. Terminate.
 void
 gpm_monitor10(mem *gpm) {
         printf("\nMONITOR: Non-digit in number");
-        gpm_monitor11(gpm)
+        gpm_monitor11(gpm);
     }
 
     // General monitor after irremediable
