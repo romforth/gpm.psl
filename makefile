@@ -1,3 +1,7 @@
 all : gpm
+	./gpm < inp > out
+	cmp out exp
+	./gpm < forth.inp > forth.out
+	cmp forth.out forth.exp
 clean:
-	rm gpm
+	rm -f gpm out forth.out
