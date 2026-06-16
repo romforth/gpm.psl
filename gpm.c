@@ -611,7 +611,7 @@ gpm_new(int n) {
     }
 
 void
-gpm_main() {
+main() {
     mem *gpm = gpm_new(10000);
     gpm_start(gpm);
 }
