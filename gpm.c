@@ -468,7 +468,7 @@ gpm_item(mem *gpm) int x) {
 void
 gpm_monitor1(mem *gpm) {
         printf("\nMONITOR: Unmatched semicolon in definition of");
-        gpm->item(gpm->p + 2);
+        gpm_item(gpm, gpm->p + 2);
         printf("\nIf this had been quoted the result would be \n");
         gpm_copy(gpm);
     }
@@ -478,7 +478,7 @@ gpm_monitor1(mem *gpm) {
 void
 gpm_monitor2(mem *gpm) {
         printf("\nMONITOR: Unquoted tilde in argument list of");
-        gpm->item(gpm->f + 2);
+        gpm_item(gpm, gpm->f + 2);
         printf("\nIf this had been quoted the result would be \n");
         gpm_copy(gpm);
     }
@@ -488,7 +488,7 @@ gpm_monitor2(mem *gpm) {
 void
 gpm_monitor3(mem *gpm) {
         printf("\nMONITOR: Impossible argument number in definition of");
-        gpm->item(gpm->p + 2);
+        gpm_item(gpm, gpm->p + 2);
         gpm_monitor11(gpm);
     }
 
@@ -500,7 +500,7 @@ gpm_monitor4(mem *gpm) {
         gpm->h = 0;
         gpm_load(gpm);
         printf(" in call for");
-        gpm->item(gpm->p + 2);
+        gpm_item(gpm, gpm->p + 2);
         gpm_monitor11(gpm);
     }
 
@@ -518,9 +518,9 @@ gpm_monitor5(mem *gpm) {
             return;
         }
         printf("argument list for");
-        gpm->item(gpm->f + 2);
+        gpm_item(gpm, gpm->f + 2);
         printf("\nProbably due to a semicolon missing from the definition of");
-        gpm->item(gpm->p + 2);
+        gpm_item(gpm, gpm->p + 2);
         printf("\nIf a final semicolon is inserted the result is \n");
         gpm->c -= 1;
         gpm_apply(gpm);
@@ -530,7 +530,7 @@ gpm_monitor5(mem *gpm) {
 void
 gpm_monitor7(mem *gpm) {
         printf("\nMONITOR: Undefined name");
-        gpm->item(gpm->w);
+        gpm_item(gpm, gpm->w);
         gpm_monitor11(gpm);
     }
 
@@ -546,7 +546,7 @@ gpm_monitor8(mem *gpm) {
 void
 gpm_monitor9(mem *gpm) {
         printf("\nMONITOR: Update argument too long for");
-        gpm->item(gpm->p + 9);
+        gpm_item(gpm, gpm->p + 9);
         gpm_monitor11(gpm);
     }
 
@@ -575,7 +575,7 @@ gpm_monitor11(mem *gpm) {
                 printf("\nNot yet entered");
             }
             for (int r = 1; r < gpm->w ; r++) {
-                gpm->item(w1);
+                gpm_item(gpm, w1);
                 if (gpm->st[w1] == 0) {
                     break;
                 }
