@@ -21,6 +21,8 @@ struct mem {
         int st[];
 };
 
+#define write_symbol putchar
+
 void
 gpm_load(mem *gpm) {
         if (gpm->h == 0) {
@@ -80,13 +82,13 @@ next:	while (gpm->a > 0) {
         gpm_monitor7(gpm);
     }
 
-    // This routine depends on the method for marking machine
-    // code macros. The method adopted here (which is
-    // different from that described in the paper or used in the
-    // actual Titan program) is to make the value a negative
-    // index integer which is used to index the label vector
-    // machine_macro, whose entries are the labels of the
-    // corresponding programs.
+// This routine depends on the method for marking machine
+// code macros. The method adopted here (which is
+// different from that described in the paper or used in the
+// actual Titan program) is to make the value a negative
+// index integer which is used to index the label vector
+// machine_macro, whose entries are the labels of the
+// corresponding programs.
 void
 gpm_jump_if_marked(mem *gpm, char x) {
         if (-6 < x && x < 0) {
@@ -94,35 +96,8 @@ gpm_jump_if_marked(mem *gpm, char x) {
         }
     }
 
-    // Main cycle
-void
-gpm_start(mem *gpm) {
-	gpm_next_ch(gpm);
-
-	switch (gpm->a){
-		case '<':
-			gpm->q++;
-			gpm_q2(gpm);
-			break;
-		case '$':
-			gpm_macro(gpm);
-			break;
-		case ',':
-			gpm_next_item(gpm);
-			break;
-		case ';':
-			gpm_apply(gpm);
-			break;
-		case '~':
-			gpm_load_arg(gpm);
-			break;
-		case '>':
-			gpm_exit(gpm);
-			break;
-		default :
-			(gpm->a == gpm->marker) ? gpm_end_fn(gpm) : gpm_copy(gpm);
-		}
-	}
+void gpm_q2(mem *);
+void gpm_start(mem *);
 
 void
 gpm_copy(mem *gpm) {
@@ -153,7 +128,7 @@ gpm_q2(mem *gpm) {
         }
     }
 
-    // Warning character actions
+// Warning character actions
 
 void
 gpm_macro(mem *gpm) {
@@ -298,6 +273,36 @@ gpm_exit(mem *gpm) {
         }
         exit(0);
     }
+
+// Main cycle
+void
+gpm_start(mem *gpm) {
+	gpm_next_ch(gpm);
+
+	switch (gpm->a){
+		case '<':
+			gpm->q++;
+			gpm_q2(gpm);
+			break;
+		case '$':
+			gpm_macro(gpm);
+			break;
+		case ',':
+			gpm_next_item(gpm);
+			break;
+		case ';':
+			gpm_apply(gpm);
+			break;
+		case '~':
+			gpm_load_arg(gpm);
+			break;
+		case '>':
+			gpm_exit(gpm);
+			break;
+		default :
+			(gpm->a == gpm->marker) ? gpm_end_fn(gpm) : gpm_copy(gpm);
+		}
+	}
 
 // Machine code macros
 
@@ -560,7 +565,6 @@ gpm_monitor11(mem *gpm) {
             gpm_start(gpm);
         }
     }
-}
 
 
 // n is stack size allowed. This should be as large as
