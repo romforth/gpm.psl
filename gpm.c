@@ -20,51 +20,6 @@ struct mem {
         int st[];
 };
 
-    // n is stack size allowed. This should be as large as
-    // possible -- say 10,000.
-void
-gpm_new(int n) -> Self {
-        let machine_macro = vec![
-            Self::def as fn(&mut GPM),
-            Self::val,
-            Self::update,
-            Self::bin,
-            Self::dec,
-            Self::bar,
-            ];
-
-        int st = vec![0; n].into_boxed_slice();
-        let mst = vec![
-            -1, 4, b'D', b'E', b'F', -1,
-            0, 4, b'V', b'A', b'L', -2,
-            6, 7, b'U', b'P', b'D', b'A', b'T', b'E', -3,
-            12, 4, b'B', b'I', b'N', -4,
-            21, 4, b'D', b'E', b'C', -5,
-            27, 4, b'B', b'A', b'R', -6,
-        ];
-        // The name-value pairs for the six machine code macros
-        // are first assembled in the vector mst and then copied
-        // to the base of the stack.
-        for (i, val) in mst.into_iter().enumerate() {
-            st[i] = val as usize;
-        }
-
-        Self {
-            st,
-            gpm->s = 39;
-            gpm->e = 33;
-            gpm->q = 1;
-            gpm->c = 0;
-            gpm->h = 0;
-            gpm->p = 0;
-            gpm->f = 0;
-            gpm->a = 0;
-            gpm->w = 0;
-            marker: (-2isize).pow(20) as usize,
-            machine_macro,
-        }
-    }
-
 void
 gpm_load(mem *gpm) {
         if (gpm->h == 0) {
@@ -646,6 +601,48 @@ gpm_read_symbol(c: &mut usize) {
             gpm->w = 0;
 	gpm->marker = -1<<20;
 	return gpm;
+    }
+
+    // n is stack size allowed. This should be as large as
+    // possible -- say 10,000.
+mem *
+gpm_new(int n) {
+	mem *gpm = malloc(n);
+	if (!gpm) {
+                fprintf(stderr, "Out of memory\n");
+                exit(1);
+        }
+
+	fn prims[] = {gpm_def, gpm_val, gpm_update, gpm_bin, gpm_dec, gpm_bar};
+        for (int i = 0; i < sizeof(prims) / sizeof(prims[0]); i++) {
+                gpm->prims[i]=prims[i];
+        }
+
+        unsigned char mst[] = {
+           -1, 4, 'D', 'E', 'F', -1,
+            0, 4, 'V', 'A', 'L', -2,
+            6, 7, 'U', 'P', 'D', 'A', 'T', 'E', -3,
+            12, 4, 'B', 'I', 'N', -4,
+            21, 4, 'D', 'E', 'C', -5,
+            27, 4, 'B', 'A', 'R', -6,
+        };
+
+        // The name-value pairs for the six machine code macros
+        // are first assembled in the vector mst and then copied
+        // to the base of the stack.
+	for (int i = 0; i < sizeof(mst) / sizeof(mst[0]); i++) {
+                gpm->st[i] = mst[i];
+	}
+            gpm->s = 39;
+            gpm->e = 33;
+            gpm->q = 1;
+            gpm->c = 0;
+            gpm->h = 0;
+            gpm->p = 0;
+            gpm->f = 0;
+            gpm->a = 0;
+            gpm->w = 0;
+            marker: -1<<20;
     }
 
 void
