@@ -225,7 +225,7 @@ gpm_apply(mem *gpm) {
         if (gpm->h != 0) {
             gpm->st[gpm->h] += gpm->st[gpm->p - 1];
         }
-        gpm->find(gpm->p + 2);
+        gpm_find(gpm, gpm->p + 2);
         gpm->jump_if_marked(gpm->st[gpm->w]);
         gpm->c = gpm->w + 1;
         gpm_start(gpm);
@@ -335,7 +335,7 @@ gpm_def(mem *gpm) {
 
 void
 gpm_val(mem *gpm) {
-        gpm->find(gpm->p + 6);
+        gpm_find(gpm, gpm->p + 6);
         while (gpm->st[gpm->w + 1] != gpm->marker) {
             gpm->w++;
             gpm->a = gpm->st[gpm->w];
@@ -346,7 +346,7 @@ gpm_val(mem *gpm) {
 
 void
 gpm_update(mem *gpm) {
-        gpm->find(gpm->p + 9);
+        gpm_find(gpm, gpm->p + 9);
         gpm->a = gpm->p + 9 + gpm->st[gpm->p + 9];
         if (gpm->st[gpm->a] > gpm->st[gpm->w]) {
             gpm_monitor9(gpm);
