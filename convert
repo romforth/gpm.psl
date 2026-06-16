@@ -1,4 +1,9 @@
 #!/usr/bin/perl -w
+
+# Copyright (c) 2026 Charles E. Suresh
+# SPDX-License-Identifier: AGPL-3.0-only
+# Please see the LICENSE file for the Affero GPL 3.0 license details
+
 while (<>) {
 	/use .*/ and next;
 	/impl .*/ and next;
