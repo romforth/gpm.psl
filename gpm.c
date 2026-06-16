@@ -50,7 +50,7 @@ gpm_load(mem *gpm) {
 void
 read_symbol(int *c) {
 	int ch = getchar();
-	*c= (ch == EOF) ? '>' : ch;
+	*c= (ch == EOF) ? ']' : ch;
 }
 
 void
@@ -126,16 +126,15 @@ gpm_copy(mem *gpm) {
 void
 gpm_q2(mem *gpm) {
 	gpm_next_ch(gpm);
-	if (gpm->a == '<') {
+	if (gpm->a == '[') {
 		gpm->q++;
 		gpm_copy(gpm);
 		return;
-	} else if (gpm->a != '>') {
+	} else if (gpm->a != ']') {
 		gpm_copy(gpm);
 		return;
 	}
-	gpm->q -= 1;
-	if (gpm->q == 1) {
+	if (--gpm->q == 1) {
 		gpm_start(gpm);
 	} else {
 		gpm_copy(gpm);
@@ -294,23 +293,23 @@ gpm_start(mem *gpm) {
 	gpm_next_ch(gpm);
 
 	switch (gpm->a) {
-		case '<':
+		case '[':
 			gpm->q++;
 			gpm_q2(gpm);
 			break;
-		case '$':
+		case '{':
 			gpm_macro(gpm);
 			break;
-		case ',':
+		case ' ':
 			gpm_next_item(gpm);
 			break;
-		case ';':
+		case '}':
 			gpm_apply(gpm);
 			break;
-		case '~':
+		case '$':
 			gpm_load_arg(gpm);
 			break;
-		case '>':
+		case ']':
 			gpm_exit(gpm);
 			break;
 		default :
@@ -461,7 +460,7 @@ gpm_monitor1(mem *gpm) {
 // Unquoted $ in argument list in input stream. Treated as [$]
 void
 gpm_monitor2(mem *gpm) {
-	printf("\nMONITOR: Unquoted tilde in argument list of");
+	printf("\nMONITOR: Unquoted '$' in argument list of");
 	gpm_item(gpm, gpm->f + 2);
 	printf("\nIf this had been quoted the result would be \n");
 	gpm_copy(gpm);
@@ -486,11 +485,9 @@ gpm_monitor4(mem *gpm) {
 	gpm_monitor11(gpm);
 }
 
-// Terminator in impossible place; if C == 0,
-// this is the input stream. Probably
-// machine error: Terminate. If C != 0, this
-// is an argument list. Probably due to a
-// missing semicolon: Final semicolon inserted.
+// Terminator in impossible place; if C == 0, this is the input stream.
+// Probably machine error: Terminate. If C != 0, this is an argument list.
+// Probably due to a missing '}', final '}' inserted.
 void
 gpm_monitor5(mem *gpm) {
 	printf("\nMONITOR: Terminator in");
@@ -501,9 +498,9 @@ gpm_monitor5(mem *gpm) {
 	}
 	printf("argument list for");
 	gpm_item(gpm, gpm->f + 2);
-	printf("\nProbably due to a semicolon missing from the definition of");
+	printf("\nProbably due to a '}' missing from the definition of");
 	gpm_item(gpm, gpm->p + 2);
-	printf("\nIf a final semicolon is inserted the result is \n");
+	printf("\nIf a final '}' is inserted the result is \n");
 	gpm->c -= 1;
 	gpm_apply(gpm);
 }
@@ -516,11 +513,10 @@ gpm_monitor7(mem *gpm) {
 	gpm_monitor11(gpm);
 }
 
-// Wrong exit (not C == H == 0). Machine
-// error: Terminate.
+// Wrong exit (not C == H == 0). Machine error: Terminate.
 void
 gpm_monitor8(mem *gpm) {
-	printf("\nMONITOR: Unmatched >. Probably machine error.");
+	printf("\nMONITOR: Unmatched ']'. Probably machine error.");
 	gpm_monitor11(gpm);
 }
 
@@ -596,12 +592,12 @@ gpm_new(int n) {
 	}
 
 	unsigned char mst[] = {
-		-1, 4, 'D', 'E', 'F', -1,
-		0, 4, 'V', 'A', 'L', -2,
-		6, 7, 'U', 'P', 'D', 'A', 'T', 'E', -3,
-		12, 4, 'B', 'I', 'N', -4,
-		21, 4, 'D', 'E', 'C', -5,
-		27, 4, 'B', 'A', 'R', -6,
+		-1, 4, 'd', 'e', 'f', -1,
+		0, 4, 'v', 'a', 'l', -2,
+		6, 7, 'u', 'p', 'd', 'a', 't', 'e', -3,
+		12, 4, 'b', 'i', 'n', -4,
+		21, 4, 'd', 'e', 'c', -5,
+		27, 4, 'b', 'a', 'r', -6,
 	};
 	// The name-value pairs for the six machine code macros
 	// are first assembled in the vector mst and then copied
