@@ -1,0 +1,69 @@
+This is a test
+
+
+
+
+Tests:
+ACA
+ACA
+
+AACAA
+AACAA
+AACAA
+
+AXDXA
+AXDXA
+
+BAXDXAB
+BAXDXAB
+
+APA
+APA
+
+PYYP
+PYYP
+PYYP
+
+Q{A C}R
+Q{A C}R
+
+A{A X}A
+A{A X}A
+
+BAX{A X}XAB
+BAX{A X}XAB
+
+Q{R}
+Q{R}
+
+Q[{A C}]R
+Q[{A C}]R
+
+XUX
+XUX
+
+
+
+
+{def Sum [{S $1 $2 0 {def S 
+     [{$3 {def $3 [{S ]{Successor $1 $2}
+                                  [ ]{Suc $3}[}]}
+          {def ]$3[ $1[ ]$2}}]}}]}
+
+c
+c
+
+same
+same
+
+different
+different
+
+4
+4
+
+3 0
+3 0
+
+{Sum 3 4 2}
+3 6
