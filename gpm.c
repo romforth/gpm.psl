@@ -75,6 +75,9 @@ void gpm_monitor9(mem *);
 void gpm_monitor10(mem *);
 void gpm_monitor11(mem *);
 
+#define false 0
+#define true 1
+
 void
 gpm_find(mem *gpm, int x) {
 	gpm->w = x;
@@ -561,7 +564,7 @@ gpm_monitor11(mem *gpm) {
 				break;
 			}
 			if (gpm->w != 1) {
-				printf("\nArg {}\t", r);
+				printf("\nArg %d\t", r);
 			}
 		}
 		gpm->w = 1;
